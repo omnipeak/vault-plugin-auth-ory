@@ -27,30 +27,14 @@ func (b *OryAuthBackend) getKratosClient(
 
 	b.Logger().Debug("could not find existing kratos client, creating new one")
 
-	b.Logger().Debug("reading config")
+	config, err := b.readConfig(ctx, s)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read config")
+	}
 
-	// TODO (TW) fix config
-	// config, err := b.readConfig(ctx, s)
-	// if err != nil {
-	// 	b.Logger().Error("failed to read config", "error", err)
-
-	// 	return nil, err
-	// }
-	// kratosConfig := configToKratosConfig(config)
+	kratosConfig := b.configToKratosConfig(config)
 
 	b.Logger().Debug("creating kratos client")
-
-	kratosConfig := kratos.NewConfiguration()
-	kratosConfig.Debug = true
-	kratosConfig.Servers = kratos.ServerConfigurations{
-		kratos.ServerConfiguration{
-			URL:         "https://localhost:4433",
-			Description: "Ory Kratos",
-			Variables:   map[string]kratos.ServerVariable{},
-		},
-	}
-	kratosConfig.HTTPClient = &http.Client{}
-
 	b.kratosClient = kratos.NewAPIClient(kratosConfig)
 
 	b.Logger().Debug("returning new kratos client", "url", kratosConfig.Servers[0].URL)

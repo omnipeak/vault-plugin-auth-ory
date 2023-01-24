@@ -2,12 +2,12 @@ package version
 
 import "fmt"
 
-const Version = "0.0.1"
+const Version = "0.1.0"
 
 var (
 	Name      string
 	GitCommit string
 
-	RunningVersion = fmt.Sprintf("v%s", Version)
 	HumanVersion   = fmt.Sprintf("%s v%s (%s)", Name, Version, GitCommit)
+	RunningVersion = fmt.Sprintf("v%s", Version)
 )
