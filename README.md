@@ -16,16 +16,15 @@ The setup guide assumes some familiarity with Vault and Vault's plugin
 ecosystem. You must have a Vault server already running, unsealed, and
 authenticated.
 
-1. Download and decompress the latest plugin binary from the Releases tab on
-GitHub. Alternatively you can compile the plugin from source.
+1. Download and decompress the latest plugin binary from the Releases tab. Alternatively you can compile the plugin from source.
 
-1. Move the compiled plugin into Vault's configured `plugin_directory`:
+2. Move the compiled plugin into Vault's configured `plugin_directory`:
 
   ```sh
   $ mv vault-auth-plugin-ory /etc/vault/plugins/vault-auth-plugin-ory
   ```
 
-1. Calculate the SHA256 of the plugin and register it in Vault's plugin catalog.
+3. Calculate the SHA256 of the plugin and register it in Vault's plugin catalog.
 If you are downloading the pre-compiled binary, it is highly recommended that
 you use the published checksums to verify integrity.
 
@@ -38,7 +37,7 @@ you use the published checksums to verify integrity.
       auth vault-plugin-auth-ory
   ```
 
-1. Mount the auth method:
+4. Mount the auth method:
 
   ```sh
   $ vault auth enable \
@@ -60,26 +59,54 @@ you use the published checksums to verify integrity.
   $ make build
   ```
 
-1. Start a Vault server in dev mode pointing to the plugin directory:
+2. Start a Vault server in dev mode pointing to the plugin directory:
 
   ```sh
   $ make start
   ```
+3. Login to Vault as root:
 
-1. Enable the plugin in Vault:
+  ```sh
+  $ vault login root
+  ```
+
+4. Enable the plugin in Vault:
 
   ```sh
   $ make enable
   ```
+5. Write the configs:
 
-1. Authenticate with the plugin:
+  ```sh
+  $ make configs
+  ```
+  
+6. Authenticate with the plugin:
 
   ```sh
   $ vault write auth/ory/login \
-namespace=workspace \
+namespace=files \
 object=c5cc3e28-e3c3-45ca-be86-a0a55953bfca \
 relation=editor \
-kratos_session_cookie=kratos_session_cookie=MTY2NzgyMjg2M3xBYVJxa2hmNFlOOFAyZnc3U3VidnZKd1A0VmdyWFgyU3ozbUNvRG4zeC1oNU1DS3Z6dkc1ODllTHdua0s5aFdpcW1ZZ0pveVNBVVM3ZXBIRWdQdlJGWXN0aS1iVU5tenVFbUw1WE1QNDRVcms5eWZZRk52R3dOdTJKLVcxYVlFWFU4ajNFUmc0bnc9PXyq29KzMQjNDdZLeJAuNLUBeU1g1-iD7l31nahltn4mZg==
+kratos_session_cookie=ory_kratos_session=MTY2NzgyMjg2M3xBYVJxa2hmNFlOOFAyZnc3U3VidnZKd1A0VmdyWFgyU3ozbUNvRG4zeC1oNU1DS3Z6dkc1ODllTHdua0s5aFdpcW1ZZ0pveVNBVVM3ZXBIRWdQdlJGWXN0aS1iVU5tenVFbUw1WE1QNDRVcms5eWZZRk52R3dOdTJKLVcxYVlFWFU4ajNFUmc0bnc9PXyq29KzMQjNDdZLeJAuNLUBeU1g1-iD7l31nahltn4mZg==
+  ```
+  
+7. Add a policy that matches the naming convention `namespace_relation` (e.g. `files_editor`) using the example policy found below, replacing the accessor string with the contents returned by:
+
+  ```sh
+  $ make accessor
+  ```
+  
+8. Login with the token provided after running the `write` command:
+
+  ```sh
+  $ vault login [token]
+  ```
+  
+9. Attempt to read secrets:
+
+  ```sh
+  $ vault read secret/files/c5cc3e28-e3c3-45ca-be86-a0a55953bfca/some_secret
   ```
 
 ## Authenticating with Ory Kratos and Keto
