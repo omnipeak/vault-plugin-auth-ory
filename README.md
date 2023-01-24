@@ -47,7 +47,7 @@ you use the published checksums to verify integrity.
 
 ## Development Setup
 
-1. Build the plugin for your platform:
+1. Build the plugin for your platform (`os/arch`) e.g.:
 
   ```sh
   $ make darwin/arm64
