@@ -2,14 +2,6 @@
 
 This repository contains code for a [HashiCorp Vault](https://github.com/hashicorp/vault) Auth [Plugin](https://developer.hashicorp.com/vault/docs/plugins) that authenticates with [Ory Kratos](https://github.com/ory/kratos) and [Ory Keto](https://github.com/ory/keto) APIs.
 
-## Note
-
-This plugin in a WIP and is not ready for production use.
-
-Currently, the config portion of the plugin is temporarily hardcoded to localhost.
-
-This plugin will be completed within the next few days/weeks.
-
 ## Setup
 
 The setup guide assumes some familiarity with Vault and Vault's plugin
@@ -80,7 +72,7 @@ you use the published checksums to verify integrity.
   ```sh
   $ make configs
   ```
-  
+
 6. Authenticate with the plugin:
 
   ```sh
@@ -90,19 +82,19 @@ object=c5cc3e28-e3c3-45ca-be86-a0a55953bfca \
 relation=editor \
 kratos_session_cookie=ory_kratos_session=MTY2NzgyMjg2M3xBYVJxa2hmNFlOOFAyZnc3U3VidnZKd1A0VmdyWFgyU3ozbUNvRG4zeC1oNU1DS3Z6dkc1ODllTHdua0s5aFdpcW1ZZ0pveVNBVVM3ZXBIRWdQdlJGWXN0aS1iVU5tenVFbUw1WE1QNDRVcms5eWZZRk52R3dOdTJKLVcxYVlFWFU4ajNFUmc0bnc9PXyq29KzMQjNDdZLeJAuNLUBeU1g1-iD7l31nahltn4mZg==
   ```
-  
+
 7. Add a policy that matches the naming convention `namespace_relation` (e.g. `files_editor`) using the example policy found below, replacing the accessor string with the contents returned by:
 
   ```sh
   $ make accessor
   ```
-  
+
 8. Login with the token provided after running the `write` command:
 
   ```sh
   $ vault login [token]
   ```
-  
+
 9. Attempt to read secrets:
 
   ```sh
@@ -139,16 +131,16 @@ When a token is successfully created, the plugin attach a policy that follows th
 You must then create a policy with that name in Vault that utilises the metadata stored in the alias. The following policy template will allow access to a KV secret at the path `secret/data/[namespace]/[object]*`:
 
 ```hcl
-path "secret/data/{{identity.entity.aliases.[auth plugin accessor].metadata.namespace}}/{{identity.entity.aliases.[auth plugin accessor].metadata.object}}*" {
+path "secret/data/{{identity.entity.aliases.auth_vault-plugin-auth-ory_e40b77a0.metadata.object}}*" {
   capabilities = ["create", "update", "read"]
 }
 
-path "secret/metadata/{{identity.entity.aliases.[auth plugin accessor].metadata.namespace}}/{{identity.entity.aliases.[auth plugin accessor].metadata.object}}}*" {
+path "secret/metadata/{{identity.entity.aliases.auth_vault-plugin-auth-ory_e40b77a0.metadata.object}}/" {
   capabilities = ["list"]
 }
 ```
 
-Being sure to replace `[auth plugin accessor]` with the accessor of the auth plugin found by running `vault auth list`.
+Being sure to replace `auth_vault-plugin-auth-ory_e40b77a0` with the accessor of the auth plugin found by running `vault auth list`.
 
 Alternatively, you can find the accessor by running the following command:
 
