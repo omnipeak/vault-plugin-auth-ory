@@ -132,11 +132,11 @@ You must then create a policy with that name in Vault that utilises the metadata
 
 ```hcl
 path "secret/data/{{identity.entity.aliases.auth_vault-plugin-auth-ory_e40b77a0.metadata.object}}*" {
-  capabilities = ["create", "update", "read"]
+  capabilities = ["create", "read", "update", "delete", "list"]
 }
 
-path "secret/metadata/{{identity.entity.aliases.auth_vault-plugin-auth-ory_e40b77a0.metadata.object}}/" {
-  capabilities = ["list"]
+path "secret/metadata/{{identity.entity.aliases.auth_vault-plugin-auth-ory_e40b77a0.metadata.object}}/*" {
+  capabilities = ["delete", "list"]
 }
 ```
 
