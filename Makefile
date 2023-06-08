@@ -121,17 +121,17 @@ test-race:
 
 # _cleanup removes any previous binaries
 _cleanup:
-	@rm -rf "${CURRENT_DIR}/bin/"
+	@sudo rm -rf "${CURRENT_DIR}/bin/"
 
 # _compress compresses all the binaries in bin/* as tarball and zip.
 _compress:
-	@mkdir -p "${CURRENT_DIR}/bin/dist"
+	@sudo mkdir -p "${CURRENT_DIR}/bin/dist"
+	@sudo chown -R "${USER}:${USER}" "${CURRENT_DIR}/bin/dist"
 	@for platform in $$(find ./bin -mindepth 1 -maxdepth 1 -type d); do \
 		osarch=$$(basename "$$platform"); \
 		if [ "$$osarch" = "dist" ]; then \
 			continue; \
 		fi; \
-		\
 		ext=""; \
 		if test -z "$${osarch##*windows*}"; then \
 			ext=".exe"; \
@@ -139,15 +139,16 @@ _compress:
 		cd "$$platform"; \
 		tar -czf "${CURRENT_DIR}/bin/dist/${NAME}_${VERSION}_$${osarch}.tgz" "${NAME}$${ext}"; \
 		zip -q "${CURRENT_DIR}/bin/dist/${NAME}_${VERSION}_$${osarch}.zip" "${NAME}$${ext}"; \
-		cd - &>/dev/null; \
+		cd "${CURRENT_DIR}"; \
 	done
 .PHONY: _compress
 
 # _checksum produces the checksums for the binaries in bin/dist
 _checksum:
 	@cd "${CURRENT_DIR}/bin/dist" && \
+		rm -f ${CURRENT_DIR}/bin/dist/${NAME}_${VERSION}_SHA256SUMS* && \
 		shasum --algorithm 256 * > ${CURRENT_DIR}/bin/dist/${NAME}_${VERSION}_SHA256SUMS && \
-		cd - &>/dev/null
+		cd "${CURRENT_DIR}"
 .PHONY: _checksum
 
 # _sign signs the binaries using the given GPG_KEY. This should not be called
